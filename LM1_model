@@ -1,0 +1,139 @@
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Calcolo della tensione equivalente secondo Boussinesq%%%%
+%%Tension under traffic loads - Boussineq Approach     %%%%
+%%International System                                 %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+clear all;
+close all;
+%%%
+% n = numero delle corsie/numebr of lane
+% w = larghezza di una singola corsia/width of single lane
+n=4;
+w=3;
+%divisioni nella direzione x/discretisation in x
+dx=0.1;
+%divisioni nella direzione y/discretisation in y
+dy=0.1;
+dz= 1.5;
+z=1;
+for hc=0.6:0.1:dz
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Matrice delle posizioni in pianta%%%
+%%Matrix of positions of tires     %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%POSIZIONE DEI CARICHI corsia 1
+%%Loads Position lane 1 - meters
+P1=[1.25 3];
+P2=[1.25 5.04];
+P3=[2.63 3];
+P4=[2.63 5.04];
+%%POSIZIONE DEI CARICHI corsia 2
+%%Loads Position lane 2 - meters
+P5=[4.66 3];
+P6=[4.66 5.04];
+P7=[6.56 3];
+P8=[6.56 5.04];
+%%POSIZIONE DEI CARICHI corsia 3
+%%Loads Position lane 3 - meters
+P9=[7.25 3];
+P10=[9.25 3];
+P11=[7.25 4.2];
+P12=[9.25 4.2];
+%%%%
+X=[0:dx:n*w];
+Y=[0:dy:n*w];
+%%%Costruzione di una matrice di distanze s%%%
+%%%Matix of distances
+x=0;
+y=0;
+for j=1:length(Y)
+for i=1:length(X)
+sP1(i,j)=sqrt((P1(1,1)-x)^2+(P1(1,2)-y)^2+hc^2);
+sP2(i,j)=sqrt((P2(1,1)-x)^2+(P2(1,2)-y)^2+hc^2);
+sP3(i,j)=sqrt((P3(1,1)-x)^2+(P3(1,2)-y)^2+hc^2);
+sP4(i,j)=sqrt((P4(1,1)-x)^2+(P4(1,2)-y)^2+hc^2);
+sP5(i,j)=sqrt((P5(1,1)-x)^2+(P5(1,2)-y)^2+hc^2);
+sP6(i,j)=sqrt((P6(1,1)-x)^2+(P6(1,2)-y)^2+hc^2);
+sP7(i,j)=sqrt((P7(1,1)-x)^2+(P7(1,2)-y)^2+hc^2);
+sP8(i,j)=sqrt((P8(1,1)-x)^2+(P8(1,2)-y)^2+hc^2);
+sP9(i,j)=sqrt((P9(1,1)-x)^2+(P9(1,2)-y)^2+hc^2);
+sP10(i,j)=sqrt((P10(1,1)-x)^2+(P10(1,2)-y)^2+hc^2);
+sP11(i,j)=sqrt((P11(1,1)-x)^2+(P11(1,2)-y)^2+hc^2);
+sP12(i,j)=sqrt((P12(1,1)-x)^2+(P12(1,2)-y)^2+hc^2);
+x=x+dx;
+end
+x=0;
+y=y+dy;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Incremento delle Tensioni%%%%%%%%%%%
+%%Tensions overimposition  %%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+N1=200;
+dsP1=(3*N1*hc^3)./(2*3.14*sP1.^5);
+dsP2=(3*N1*hc^3)./(2*3.14*sP2.^5);
+dsP3=(3*N1*hc^3)./(2*3.14*sP3.^5);
+dsP4=(3*N1*hc^3)./(2*3.14*sP4.^5);
+N2=100;
+dsP5=(3*N2*hc^3)./(2*3.14*sP5.^5);
+dsP6=(3*N2*hc^3)./(2*3.14*sP6.^5);
+dsP7=(3*N2*hc^3)./(2*3.14*sP7.^5);
+dsP8=(3*N2*hc^3)./(2*3.14*sP8.^5);
+N3=50;
+dsP9=(3*N3*hc^3)./(2*3.14*sP9.^5);
+dsP10=(3*N3*hc^3)./(2*3.14*sP10.^5);
+dsP11=(3*N3*hc^3)./(2*3.14*sP11.^5);
+dsP12=(3*N3*hc^3)./(2*3.14*sP12.^5);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%CARICO LINEARE EQUIVALENTE%%%%%%%%%%
+%%Equivalente Load          %%%%%5%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+PP1=dsP1*3.14*hc/2;
+PP2=dsP2*3.14*hc/2;
+PP3=dsP3*3.14*hc/2;
+PP4=dsP4*3.14*hc/2;
+PP5=dsP5*3.14*hc/2;
+PP6=dsP6*3.14*hc/2;
+PP7=dsP7*3.14*hc/2;
+PP8=dsP8*3.14*hc/2;
+PP9=dsP9*3.14*hc/2;
+PP10=dsP10*3.14*hc/2;
+PP11=dsP11*3.14*hc/2;
+PP12=dsP12*3.14*hc/2;
+PPtot=PP1+PP2+PP3+PP4+PP5+PP6+PP7+PP8+PP9+PP10+PP11+PP12;
+ptraffic(1,z)=max(max(PPtot));
+sigmatot=2*PPtot./(hc*3.14);
+sigma(1,z)=max(max(sigmatot))+9;
+surfc(X,Y,sigmatot);
+xlabel('transversal direction [m]');
+ylabel('longitudinal direction [m]');
+zlabel('tension [kN/m2]');
+ figureHandle=gcf;
+set(findall(figureHandle,'type','text'),'fontSize',14,'fontWeight','bold')
+set(findall(gcf,'type','axes'),'fontsize',14)
+
+z=z+1;
+end
+hc=[0.6:0.1:dz];
+figure
+hold on
+plot(hc, sigma,'o')
+grid on;
+grid minor on;
+xlabel('h of the cover [m]');
+ylabel('sigma [kN/m2]');
+ figureHandle=gcf;
+set(findall(figureHandle,'type','text'),'fontSize',20,'fontWeight','bold')
+set(findall(gcf,'type','axes'),'fontsize',14)
+
+figure
+plot(hc, ptraffic,'*')
+grid on;
+grid minor on;
+xlabel('h of the cover [m]');
+ylabel('ptraffic [kN/m]');
+ figureHandle=gcf;
+set(findall(figureHandle,'type','text'),'fontSize',20,'fontWeight','bold')
+set(findall(gcf,'type','axes'),'fontsize',14)
