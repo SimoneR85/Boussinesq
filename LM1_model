@@ -4,6 +4,7 @@
 %%Tension under traffic loads - Boussineq Approach     %%%%
 %%International System                                 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%ALL NUMBERS CAN BE MODIFIED - HERE ONLY AN EXAMPLE
 %%%
 clear all;
 close all;
